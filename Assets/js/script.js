@@ -16,6 +16,18 @@ $(function () {
     // hourNotes is used to keep list of historic notes for time block.
     notes : [],
     
+    // _checkDuplicate check if timeBlock has been existed in notes and return -1 or the index of duplicate
+    _checkDuplicate : function(timeBlock) {
+      // check if timeBlock 
+      for (let index = 0; index < this.notes.length; index++) {
+        const element = this.notes[index];
+        if (element.timeBlock === timeBlock) {
+          return index;          
+        }
+      };
+      return -1;
+    },
+
     // saveNote gets note and save note to hourNotes in localStorage after transform to string.
     saveNote : function(time, text) {
       var note = {
@@ -23,8 +35,13 @@ $(function () {
           note: text,
       };
       
-      this.notes.push(note);
-      localStorage.setItem('hourNotes', JSON.stringify(this.notes));
+      var index = this._checkDuplicate(time);
+      if (index < 0) {
+        this.notes.push(note);
+      } else {
+        this.notes[index] = note;
+      };
+      localStorage.setItem('hourNotes', JSON.stringify(this.notes));      
     },
   
     // loadNotes returns array of objects from hourNotes in localStorage.
@@ -61,7 +78,6 @@ $(function () {
     timeScheduler.saveNote(timeBlockEl.attr('id'),timeBlockEl.children().eq(1).val());
 
   });
-
 
   // Apply past or future to time block when time is out of business time
   if (dayjs().hour() < 9) {
