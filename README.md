@@ -6,7 +6,7 @@ This work day scheduler page was created as a simple calendar application that a
 
 ## Screenshot
 
-![Screenshot](./assets/images/Screenshot.PNG)
+![Screenshot](./Assets/images/Screenshot.PNG)
 
 ## Usage
 
