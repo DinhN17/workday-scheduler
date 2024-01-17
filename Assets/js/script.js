@@ -41,7 +41,14 @@ $(function () {
       } else {
         this.notes[index] = note;
       };
-      localStorage.setItem('hourNotes', JSON.stringify(this.notes));      
+
+      try {
+        localStorage.setItem('hourNotes', JSON.stringify(this.notes));
+        return true;
+      } catch(e) {
+        return false;
+      };
+            
     },
   
     // loadNotes returns array of objects from hourNotes in localStorage.
@@ -75,7 +82,18 @@ $(function () {
     //
     var timeBlockEl = $(event.target).parents(".time-block");
     // get text from textarea and save to localStorage
-    timeScheduler.saveNote(timeBlockEl.attr('id'),timeBlockEl.children().eq(1).val());
+    if (timeScheduler.saveNote(timeBlockEl.attr('id'),timeBlockEl.children().eq(1).val())) {
+      $("#time-table").before("<p class=\"text-center\">Appointment Added to <span style=\"color:orange\" >localStorage</span> <i class=\"fa fa-check\" style=\"font-size:24px;color:green\"></i></p>");
+    } else {
+      $("#time-table").before("<p class=\"text-center\">Appointment failed to add to localStorage </p>");      
+    }
+    // timeScheduler.saveNote(timeBlockEl.attr('id'),timeBlockEl.children().eq(1).val());
+
+    // set timer 2s to delete saving message
+    setTimeout(() => {
+      $("#time-table").prev().remove();
+    }, 2000);
+    
 
   });
 
