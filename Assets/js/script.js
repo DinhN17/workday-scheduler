@@ -12,6 +12,8 @@ $(function () {
   // time-block containing the button that was clicked? How might the id be
   // useful when saving the description in local storage?
   //
+
+  // timeScheduler: an object for managing notes/events by time which user input and save to localstorage
   var timeScheduler = {
     // hourNotes is used to keep list of historic notes for time block.
     notes : [],
@@ -29,12 +31,14 @@ $(function () {
     },
 
     // saveNote gets note and save note to hourNotes in localStorage after transform to string.
+    // return false/true if it failed/success to save to localStorage
     saveNote : function(time, text) {
       var note = {
           timeBlock: time,
           note: text,
       };
       
+      // check if the timeblock data has been existed. If yes, overwite it, else push it to array.
       var index = this._checkDuplicate(time);
       if (index < 0) {
         this.notes.push(note);
@@ -69,11 +73,10 @@ $(function () {
     },
   };
 
-  // load notes from localStorage to display in the time-block.
+  // load notes from localStorage to display in the time-blocks respectively.
   var savedNotes = timeScheduler.loadNotes();
   savedNotes.forEach(element => {
     var timeBlockEl = $('#'+element.timeBlock);
-    // console.log(timeBlockEl);
     timeBlockEl.children().eq(1).text(element.note);
   });
 
@@ -81,15 +84,14 @@ $(function () {
   $(".btn").on("click", function (event) {
     //
     var timeBlockEl = $(event.target).parents(".time-block");
-    // get text from textarea and save to localStorage
+    // get text from textarea, save to localStorage and send a message if the saving is success.
     if (timeScheduler.saveNote(timeBlockEl.attr('id'),timeBlockEl.children().eq(1).val())) {
       $("#time-table").before("<p class=\"text-center\">Appointment Added to <span style=\"color:orange\" >localStorage</span> <i class=\"fa fa-check\" style=\"font-size:24px;color:green\"></i></p>");
     } else {
       $("#time-table").before("<p class=\"text-center\">Appointment failed to add to localStorage </p>");      
     }
-    // timeScheduler.saveNote(timeBlockEl.attr('id'),timeBlockEl.children().eq(1).val());
-
-    // set timer 2s to delete saving message
+    
+    // set timer 2s to delete saved notification message
     setTimeout(() => {
       $("#time-table").prev().remove();
     }, 2000);
@@ -114,8 +116,7 @@ $(function () {
 
   // ID of current time block
   const currentId = "#hour-" + dayjs().hour();
-  // console.log(currentId);
-
+  
   // Apply current class to current time block
   $(currentId).addClass("present");
   $(currentId).removeClass("future past");
@@ -134,5 +135,4 @@ $(function () {
   // Display the current date in the header of the page.
   var now = dayjs().format('dddd, MMMM Do');
   $('#currentDay').text(now);
-  // console.log(now);
 });
